@@ -3,8 +3,8 @@ Contributors: gyrus
 Donate link: http://www.babyloniantimes.co.uk/index.php?page=donate
 Tags: admin, administration, cms, page, pages, permalink, seo
 Requires at least: 3.0
-Tested up to: 3.2.1
-Stable tag: 0.2
+Tested up to: 3.1.3
+Stable tag: 0.2.2
 
 Lock Pages prevents specified pages (or all pages) from having their slug, parent, status or password edited, or from being deleted, by non-administrators.
 
@@ -18,11 +18,14 @@ This plugin lets administrators "lock" any or all pages. "Locking" here basicall
 * Changing the page's parent
 * Changing the page's template
 * Deleting the page
-* Changing the page's status / visibility
+* Changing the page's status
+* Changing the page's password protection
 
 Locking is implemented by preventing the actual database update being performed as well as, where possible, having the interface element for that field removed. Where possible interface elements are removed via WP filters on the server; otherwise, jQuery is used on the client.
 
 NOTE: Currently, I've been unable to get this working with the Quick Edit functionality. As a stop-gap measure, which is only in place because it seems to be better than nothing, the Quick Edit link is removed for users who can't edit locked pages. I know, it's not great. But until I work out how to selectively block Quick Editing, I'm assuming a locked page should be locked. Users can always edit the other fields via the normal edit page.
+
+Development code hosted at [GitHub](https://github.com/gyrus/Lock-Pages).
 
 == Installation ==
 
@@ -42,7 +45,7 @@ That's it!
 
 The definition of who is able to move or delete locked pages is made via a plugin setting that specifies a [capability](http://codex.wordpress.org/Roles_and_Capabilities). This also defines who can edit the plugin's settings, and who can lock individual pages. Be careful not to bar yourself!
 
-It defaults to `update_care`, which by default is only granted to the Administrator role, but it can be changed. You will get a warning if you enter a capability that doesn't exist in your system.
+It defaults to `manage_options`, which by default is only granted to the Administrator role, but it can be changed. You will get a warning if you enter a capability that doesn't exist in your system.
 
 Lock Pages will work with Justin Tadlock's [Members](http://wordpress.org/extend/plugins/members/) plugin, if it's installed, to respect any custom capabilities you may have entered.
 
@@ -66,12 +69,6 @@ Of course, contributing back to the WordPress community is also a great way to e
 4. The pages list will show which pages are currently locked
 
 == Changelog ==
-
-= 0.3 =
-* Added options to control what is locked
-* Added version number comparison for options upgrades
-* Removed locking notice from top of screen and replaced it with meta box notice
-* Removed PHP 4 compatibility
 
 = 0.2.2 =
 * Added locking of page template
