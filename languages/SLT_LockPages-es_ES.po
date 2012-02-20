@@ -1,0 +1,242 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Lock Pages\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2011-04-27 22:30+0100\n"
+"PO-Revision-Date: 2011-04-27 22:30+0100\n"
+"Last-Translator: \n"
+"Language-Team: Pose Lab\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-Language: Spanish\n"
+"X-Poedit-Country: SPAIN\n"
+"X-Poedit-SourceCharset: utf-8\n"
+"X-Poedit-KeywordsList: __;_e;__ngettext:1,2;__ngettext_noop:1,2;_c\n"
+"X-Poedit-Basepath: ../\n"
+": \n"
+"X-Poedit-SearchPath-0: .\n"
+
+#: lock-pages.php:354
+msgid "Please note that this page is currently locked."
+msgstr "Esta página está actualmente bloqueda."
+
+#: lock-pages.php:383
+msgid "Lock this page"
+msgstr "Bloquear esta página"
+
+#: lock-pages.php:549
+msgid "Settings"
+msgstr "Configuración"
+
+#: lock-pages.php:563
+msgid "Whoops! There was a problem with the data you posted. Please go back and try again."
+msgstr "¡Vaya! Ha sucedido un problema con los datos que has insertado. Por favor, regresa e inténtalo de nuevo."
+
+#: lock-pages.php:569
+msgid "Your changes were sucessfully saved."
+msgstr "Tus cambios han sido guardados con éxito."
+
+#: lock-pages.php:599
+msgid "Warning! The capability you have entered isn't currently granted to any roles in this installation."
+msgstr "¡Cuidado! El permiso que has insertado no está actualmente concedido a ningún role en esta instalación."
+
+#: lock-pages.php:603
+msgid "Lock Pages"
+msgstr "Bloquear páginas"
+
+#: lock-pages.php:612
+msgid "WP capability needed to edit locked page elements"
+msgstr "Permiso necesario para editar elementos bloqueados de página"
+
+#: lock-pages.php:616
+msgid "Scope for locking"
+msgstr "Ámbito de bloqueo"
+
+#: lock-pages.php:618
+msgid "Lock only specified pages"
+msgstr "Bloquear sólo las páginas especificadas"
+
+#: lock-pages.php:619
+msgid "Lock all pages"
+msgstr "Bloquear todas las páginas"
+
+#: lock-pages.php:623
+msgid "Save Changes"
+msgstr "Guardar Cambios"
+
+#~ msgid "Lock the slug, parent and deletion of this page"
+#~ msgstr "Bloquear"
+
+#~ msgid "Lock"
+#~ msgstr "Bloq"
+
+#~ msgid "Page locking"
+#~ msgstr "Bloqueo de página"
+
+#, fuzzy
+#~ msgid "Lock aa"
+#~ msgstr "Bloqueado"
+
+#~ msgid "Navigation"
+#~ msgstr "Navegación"
+
+#~ msgid "Admin Management Xtended requires at least WordPress 2.5!"
+#~ msgstr "Admin Management Xtended requiere al menos WordPress 2.5!"
+
+#~ msgid ""
+#~ "<strong>Admin Management Xtended</strong> plugin version 2.0 requires at "
+#~ "least WordPress 2.7! If you're still using a WP version prior to 2.7, "
+#~ "please <a href='%s'>use Admin Management Xtended version 1.9.1</a>! "
+#~ "Consider updating to the latest WP version for your own safety!"
+#~ msgstr ""
+#~ "¡El plugin <strong>Admin Management Xtended</strong> versión 2.0 requiere "
+#~ "al menos WordPress 2.7! Si aún está usando una versión anterior, por "
+#~ "favor <a href='%s'>use la versión 1.9.1 de Admin Management Xtended</a>! "
+#~ "Considere actualizarse a la última versión de WP por su propia seguridad!"
+
+#~ msgid ""
+#~ "You seem using the <em>Better Tags Manager</em> plugin, which collides "
+#~ "with the <em>Admin Management Xtended</em> plugin since both extend the "
+#~ "tags column. Please deactivate one of both to make this message disappear."
+#~ msgstr ""
+#~ "Parece estar utilizando el plugin <em>Better Tags Manager</em>, que no es "
+#~ "compatible con el plugin <em>Admin Management Xtended</em> pues ambos "
+#~ "extienden la columna de etiquetas. Por favor, desactive uno de los dos "
+#~ "para que este mensaje desaparezca."
+
+#~ msgid "(This message was created by Admin Management Xtended plugin)"
+#~ msgstr "(Este mensaje fue generado por el plugin Admin Management Xtended)"
+
+#~ msgid "Edit"
+#~ msgstr "Editar"
+
+#~ msgid "Toggle comment status open/closed"
+#~ msgstr "Cambiar estatus de comentarios: abiertos/cerrados"
+
+#~ msgid "No Tags"
+#~ msgstr "No hay etiquetas"
+
+#~ msgid "Uncategorized"
+#~ msgstr "Sin categoría"
+
+#~ msgid "Save"
+#~ msgstr "Guardar"
+
+#~ msgid "Cancel"
+#~ msgstr "Cancelar"
+
+#~ msgid "You are not allowed to change the post author as this user."
+#~ msgstr "No tiene autorización para cambiar el autor de esta entrada."
+
+#~ msgid "You are not allowed to change the page author as this user."
+#~ msgstr "No tiene autorización para cambiar el autor de del página."
+
+#~ msgid "Y/m/d"
+#~ msgstr "Y/m/d"
+
+#~ msgid "You are not allowed to edit this post."
+#~ msgstr "No tiene autorización para editar esta entrada."
+
+#~ msgid "Sorry, you do not have the right to publish this post."
+#~ msgstr "No tiene autorización para publicar esta entrada."
+
+#~ msgid "Toggle visibility"
+#~ msgstr "Cambiar Visibilidad"
+
+#~ msgid "Plugin: Exclude Pages - Exclude page from navigation"
+#~ msgstr "Plugin: Excluir Páginas - Excluir páginas de navegación"
+
+#~ msgid "Change page order"
+#~ msgstr "Cambiar orden de páginas"
+
+#~ msgid "Edit Page Order:"
+#~ msgstr "Editar Orden de Páginas:"
+
+#~ msgid "Edit Post Order:"
+#~ msgstr "Editar Orden de Entradas:"
+
+#~ msgid "Drag & Drop"
+#~ msgstr "Arrastrar y Soltar"
+
+#~ msgid "Off"
+#~ msgstr "Desactivado"
+
+#~ msgid "Direct input"
+#~ msgstr "Ingreso Manual"
+
+#~ msgid ""
+#~ "Drag & Drop <a href='http://www.schloebe.de/wordpress/admin-management-"
+#~ "xtended-plugin/#pageorder' target='_blank'>[?]</a>"
+#~ msgstr ""
+#~ "Arrastrar & Soltar <a href='http://www.schloebe.de/wordpress/admin-"
+#~ "management-xtended-plugin/#pageorder' target='_blank'>[?]</a>"
+
+#~ msgid "Hide invisible Posts"
+#~ msgstr "Ocultar Entradas Invisibles"
+
+#~ msgid "Show invisible Posts"
+#~ msgstr "Mostrar Entradas Invisibles"
+
+#~ msgid "Post Revisions"
+#~ msgstr "Revisiones de Entradas"
+
+#~ msgid "Page Revisions"
+#~ msgstr "Revisiones de Páginas"
+
+#~ msgid "Post"
+#~ msgstr "Entrada"
+
+#~ msgid "Please wait..."
+#~ msgstr "Por favor, espere..."
+
+#~ msgid "Slug may not be empty!"
+#~ msgstr "El Permalink no debe estar vacío!"
+
+#~ msgid "Insert time"
+#~ msgstr "Insertar hora"
+
+#~ msgid "Change image set"
+#~ msgstr "Cambiar set de la imagen"
+
+#~ msgid "Enhanced by Admin Management Xtended Plugin"
+#~ msgstr "Mejorado por el plugin Admin Management Xtended"
+
+#~ msgid "Visible"
+#~ msgstr "Visible"
+
+#~ msgid "Yes"
+#~ msgstr "Sí"
+
+#~ msgid "No"
+#~ msgstr "No"
+
+#~ msgid "Categories"
+#~ msgstr "Categorías"
+
+#~ msgid "Media Order"
+#~ msgstr "Orden de la Biblioteca de Medios:"
+
+#~ msgid "Description"
+#~ msgstr "Descripción"
+
+#~ msgid "Actions"
+#~ msgstr "Acciones"
+
+#~ msgid "Page Order:"
+#~ msgstr "Orden de Páginas:"
+
+#~ msgid "Post Order:"
+#~ msgstr "Orden de Entradas:"
+
+#~ msgid "Change Publication Date"
+#~ msgstr "Cambiar Fecha de Publicación"
+
+#~ msgid "Edit Page Slug"
+#~ msgstr "Cambiar Ruta de la Página"
+
+#~ msgid "Tags"
+#~ msgstr "Etiquetas"
+
+#~ msgid "Edit Post Slug"
+#~ msgstr "Editar Ruta de la Entrada"

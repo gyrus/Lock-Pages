@@ -1,0 +1,65 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Lock Pages\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2011-04-17 11:50-0000\n"
+"PO-Revision-Date: 2011-04-17 11:50-0000\n"
+"Last-Translator: Steven Taylor <steve@sltaylor.co.uk>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-KeywordsList: _;gettext;gettext_noop;__;_e;esc_attr__;esc_attr_e\n"
+"X-Poedit-Basepath: .\n"
+"X-Poedit-Language: English\n"
+"X-Poedit-Country: UNITED KINGDOM\n"
+"X-Poedit-SearchPath-0: ..\n"
+
+#: ../lock-pages.php:354
+msgid "Please note that this page is currently locked."
+msgstr ""
+
+#: ../lock-pages.php:383
+msgid "Lock this page"
+msgstr ""
+
+#: ../lock-pages.php:549
+msgid "Settings"
+msgstr ""
+
+#: ../lock-pages.php:563
+msgid "Whoops! There was a problem with the data you posted. Please go back and try again."
+msgstr ""
+
+#: ../lock-pages.php:569
+msgid "Your changes were sucessfully saved."
+msgstr ""
+
+#: ../lock-pages.php:599
+msgid "Warning! The capability you have entered isn't currently granted to any roles in this installation."
+msgstr ""
+
+#: ../lock-pages.php:603
+msgid "Lock Pages"
+msgstr ""
+
+#: ../lock-pages.php:612
+msgid "WP capability needed to edit locked page elements"
+msgstr ""
+
+#: ../lock-pages.php:616
+msgid "Scope for locking"
+msgstr ""
+
+#: ../lock-pages.php:618
+msgid "Lock only specified pages"
+msgstr ""
+
+#: ../lock-pages.php:619
+msgid "Lock all pages"
+msgstr ""
+
+#: ../lock-pages.php:623
+msgid "Save Changes"
+msgstr ""
+
