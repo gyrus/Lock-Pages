@@ -90,6 +90,7 @@ if ( ! class_exists('SLT_LockPages') ) {
 			add_filter( 'get_sample_permalink_html', array( &$this, 'remove_edit_permalink' ), 10, 2 );
 			add_filter( 'wp_dropdown_pages', array( &$this, 'remove_parent_selection' ) );
 			add_filter( 'admin_body_class', array( &$this, 'admin_body_class' ) );
+			add_filter( 'parse_query', array( &$this, 'filter_out_locked_pages' ) );
 
 			// These we only need if the scope is set to only lock specified pages
 			if ( $this->options[$this->prefix.'scope'] != "all" ) {
@@ -110,6 +111,27 @@ if ( ! class_exists('SLT_LockPages') ) {
 		}
 
 		/**
+		*
+		* @since	0.3
+		* @return	string
+		*/
+
+		function filter_out_locked_pages( $query ) {
+			 global $pagenow, $post_type;
+			 if ( $pagenow=='edit.php' && $post_type == 'page' && $this->options[$this->prefix.'no_view'] && ! current_user_can( $this->options[$this->prefix.'capability'] ) )
+			        $query->query_vars['post__not_in'] = $this->locked_pages();
+		}
+
+		function filter_locked_pages_from_dropdown( $output ) {
+			 $filtered = '';
+			 foreach ( explode( "\n", $output ) as $line) {
+			 	 if ( ! preg_match( '/value="(\d*)"/', $line, $matches) || ! ( $matches[1] == "" || $this->is_page_locked( $matches[1] ) ) )
+				      	$filtered .= $line;
+			 }
+			 return $filtered;
+		}
+
+		/**
 		* Remove parent selection.
 		*
 		* @since	0.2
@@ -120,7 +142,9 @@ if ( ! class_exists('SLT_LockPages') ) {
 		function remove_parent_selection( $output ) {
 			global $post;
 			if ( ! $this->user_can_edit( $post->ID ) )
-				$output = '';
+				return '';
+			if ( ( ! current_user_can( $this->options[$this->prefix.'capability'] ) && $this->options[$this->prefix.'no_view'] ) )
+				return $this->filter_locked_pages_from_dropdown( $output );
 			return $output;
 		}
 
@@ -164,8 +188,9 @@ if ( ! class_exists('SLT_LockPages') ) {
 		* @return	array
 		*/
 		function remove_page_row_actions( $actions, $page ) {
+			$actions_to_remove = array( 'inline', 'inline hide-if-no-js', 'trash' );
 			if ( ! $this->user_can_edit( $page->ID ) ) {
-				foreach ( array( 'inline', 'inline hide-if-no-js', 'trash' ) as $action_key ) {
+				foreach ( $actions_to_remove as $action_key ) {
 					if ( array_key_exists( $action_key, $actions ) )
 						unset ( $actions[ $action_key ] );
 				}
@@ -456,12 +481,19 @@ if ( ! class_exists('SLT_LockPages') ) {
 		*/
 		function is_page_locked( $post_id ) {
 			if ( $post_id ) {
-				$locked_pages = $this->options[$this->prefix.'locked_pages'];
-				$locked_pages = explode( ',', $locked_pages );
-				return in_array( $post_id, $locked_pages );
+				return in_array( $post_id, $this->locked_pages() );
 			} else {
 				return false;
 			}
+		}
+
+		/**
+		* Returns a list of locked pages
+		* @return   	 array
+		* @since	 0.3
+		*/
+		function locked_pages() {
+			 return explode( ',', $this->options[$this->prefix.'locked_pages'] );
 		}
 
 		/**
@@ -505,6 +537,7 @@ if ( ! class_exists('SLT_LockPages') ) {
 				$the_options = array(
 					$this->prefix.'capability' => 'manage_options',
 					$this->prefix.'scope' => 'locked',
+					$this->prefix.'no_view' => false, 
 					$this->prefix.'locked_pages' => ''
 				);
 				update_option($this->options_name, $the_options);
@@ -558,6 +591,7 @@ if ( ! class_exists('SLT_LockPages') ) {
 
 				$this->options[$this->prefix.'capability'] = $_POST[$this->prefix.'capability'];
 				$this->options[$this->prefix.'scope'] = $_POST[$this->prefix.'scope'];
+				$this->options[$this->prefix.'no_view'] = isset($_POST[$this->prefix.'no_view']);
 				$this->save_admin_options();
 
 				echo '<div class="updated"><p>'.__( 'Your changes were sucessfully saved.', $this->localization_domain ).'</p></div>';
@@ -605,8 +639,12 @@ if ( ! class_exists('SLT_LockPages') ) {
 						<tr valign="top">
 							<th width="33%" scope="row"><label for="<?php echo esc_attr( $this->prefix ); ?>capability"><?php _e( 'WP capability needed to edit locked page elements', $this->localization_domain ); ?></label></th>
 							<td><input name="<?php echo esc_attr( $this->prefix ); ?>capability" type="text" id="<?php echo esc_attr( $this->prefix ); ?>capability" size="45" value="<?php echo esc_attr( $this->options[$this->prefix.'capability'] ); ?>"/></td>
-						</tr>
+						</tr>	
 						<tr valign="top">
+							<th width="33%" scope="row"><label for="<?php echo esc_attr( $this->prefix ); ?>no_view"><?php _e( 'Prevent unauthorized users from seeing locked pages', $this->localization_domain ); ?></label></th>
+							<td><input name="<?php echo esc_attr( $this->prefix ); ?>no_view" type="checkbox" id="<?php echo esc_attr( $this->prefix ); ?>no_view" size="45" <?php if ( $this->options[$this->prefix.'no_view']==1 ) echo 'checked="checked"'; ?> /></td>
+						</tr>
+					<tr valign="top">
 							<th width="33%" scope="row"><?php _e( 'Scope for locking', $this->localization_domain ); ?></th>
 							<td>
 								<input name="<?php echo esc_attr( $this->prefix ); ?>scope" type="radio" id="<?php echo esc_attr( $this->prefix ); ?>scope_locked" value="locked"<?php if ( $this->options[$this->prefix.'scope']=="locked" ) echo ' checked="checked"'; ?> /> <label for="<?php echo esc_attr( $this->prefix ); ?>scope_locked"><?php _e( 'Lock only specified pages', $this->localization_domain ); ?></label><br />
