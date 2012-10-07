@@ -66,20 +66,20 @@ if ( ! class_exists('SLT_LockPages') ) {
 			// Initialize the options
 			// This is REQUIRED to initialize the options when the plugin is loaded!
 			$this->get_options();
-			
+
 			// Initialize hooks
 			add_action( 'admin_init', array( &$this, 'add_hooks' ) );
 			add_action( 'admin_menu', array( &$this, 'admin_menu_link' ) );
 
 		}
-		
+
 		/**
 		* Add hooks
 		*
 		* @since	0.2
 		*/
 		function add_hooks() {
-			
+
 			// Changes to the page screens
 			add_action( 'edit_page_form', array( &$this, 'old_value_fields' ) );
 			add_action( 'admin_notices', array( &$this, 'output_page_locked_notice' ) );
@@ -106,7 +106,7 @@ if ( ! class_exists('SLT_LockPages') ) {
 			add_filter( 'status_save_pre', array( &$this, 'lock_status' ), 0 );
 			add_filter( 'password_save_pre', array( &$this, 'lock_password' ), 0 );
 			add_filter( 'user_has_cap', array( &$this, 'lock_deletion' ), 0, 3 );
-			
+
 		}
 
 		/**
@@ -136,7 +136,7 @@ if ( ! class_exists('SLT_LockPages') ) {
 			if ( ! $this->user_can_edit( $post->ID ) )
 				remove_meta_box( 'slugdiv', 'page', 'normal' );
 		}
-		
+
 		/**
 		* Remove edit permalink functionality from permalink HTML.
 		*
@@ -152,7 +152,7 @@ if ( ! class_exists('SLT_LockPages') ) {
 				$return = substr_replace( $return, '', $element_start, $element_end - $element_start );
 				$return = preg_replace( '#<span id="editable-post-name"[^>]*>([^<]+)</span>#', '$1', $return );
 			}
-			return $return;	
+			return $return;
 		}
 
 		/**
@@ -170,7 +170,7 @@ if ( ! class_exists('SLT_LockPages') ) {
 						unset ( $actions[ $action_key ] );
 				}
 			}
-			return $actions;	
+			return $actions;
 		}
 
 		/**
@@ -407,7 +407,7 @@ if ( ! class_exists('SLT_LockPages') ) {
 			$locked_pages = explode( ',', $locked_pages );
 			$update = false;
 
-			if ( $_POST[$this->prefix.'locked'] ) {
+			if ( isset( $_POST[$this->prefix.'locked'] ) && $_POST[$this->prefix.'locked'] ) {
 				// Box was checked, make sure page is added to list of locked pages
 				if ( ! in_array( $post_id, $locked_pages ) ) {
 					$locked_pages[] = $post_id;
@@ -466,7 +466,7 @@ if ( ! class_exists('SLT_LockPages') ) {
 
 		/**
 		* Load JavaScript and CSS
-		* 
+		*
 		* @since	0.2
 		* @uses	wp_enqueue_script() wp_enqueue_style()
 		*/
@@ -477,7 +477,7 @@ if ( ! class_exists('SLT_LockPages') ) {
 
 		/**
 		* Signal a locked page with a body class
-		* 
+		*
 		* @since	0.2
 		* @global	$post $pagenow
 		*/
