@@ -49,11 +49,6 @@ if ( ! class_exists('SLT_LockPages') ) {
 		var $options = array();
 
 		/**
-		* PHP 4 Compatible Constructor
-		*/
-		function SLT_LockPages() { $this->__construct(); }
-
-		/**
 		* PHP 5 Constructor
 		*/
 		function __construct() {

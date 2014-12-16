@@ -4,7 +4,7 @@ Donate link: http://www.babyloniantimes.co.uk/index.php?page=donate
 Tags: admin, administration, cms, page, pages, permalink, seo
 Requires at least: 3.0
 Tested up to: 3.6.1
-Stable tag: 0.2.2
+Stable tag: 0.2.3
 
 Lock Pages prevents specified pages (or all pages) from having their slug, parent, status or password edited, or from being deleted, by non-administrators.
 
@@ -69,6 +69,9 @@ Of course, contributing back to the WordPress community is also a great way to e
 4. The pages list will show which pages are currently locked
 
 == Changelog ==
+
+= 0.2.3 =
+* Removed PHP 4 constructor
 
 = 0.2.2 =
 * Added locking of page template
