@@ -4,7 +4,7 @@ Plugin Name: Lock Pages
 Plugin URI: http://wordpress.org/extend/plugins/lock-pages/
 Description: Allows admins to lock pages in order to prevent breakage of important URLs.
 Author: Steve Taylor
-Version: 0.2.3
+Version: 0.2.4
 Author URI: http://sltaylor.co.uk
 Based on: http://pressography.com/plugins/wordpress-plugin-template/
 */
@@ -83,7 +83,6 @@ if ( ! class_exists('SLT_LockPages') ) {
 			add_action( 'load-edit.php', array( &$this, 'load_js_css' ) );
 			add_filter( 'page_row_actions', array( &$this, 'remove_page_row_actions' ), 10, 2 );
 			add_filter( 'get_sample_permalink_html', array( &$this, 'remove_edit_permalink' ), 10, 2 );
-			add_filter( 'wp_dropdown_pages', array( &$this, 'remove_parent_selection' ) );
 			add_filter( 'admin_body_class', array( &$this, 'admin_body_class' ) );
 
 			// These we only need if the scope is set to only lock specified pages
@@ -102,21 +101,6 @@ if ( ! class_exists('SLT_LockPages') ) {
 			add_filter( 'password_save_pre', array( &$this, 'lock_password' ), 0 );
 			add_filter( 'user_has_cap', array( &$this, 'lock_deletion' ), 0, 3 );
 
-		}
-
-		/**
-		* Remove parent selection.
-		*
-		* @since	0.2
-		* @param	string	$output	The wp_dropdown_pages output
-		* @global	$post
-		* @return	string
-		*/
-		function remove_parent_selection( $output ) {
-			global $post;
-			if ( ! $this->user_can_edit( $post->ID ) )
-				$output = '';
-			return $output;
 		}
 
 		/**
