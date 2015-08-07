@@ -512,7 +512,9 @@ if ( ! class_exists('SLT_LockPages') ) {
 		 * @return	array
 		 */
 		function get_lockable_post_types() {
-			return array_push( $this->options[$this->prefix.'post_types'], 'page' );
+			$lockable_post_types = $this->options[$this->prefix.'post_types'];
+			array_push( $lockable_post_types, 'page' );
+			return $lockable_post_types;
 		}
 
 		/**
