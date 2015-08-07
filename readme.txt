@@ -1,25 +1,27 @@
 === Lock Pages ===
 Contributors: gyrus
 Donate link: http://www.babyloniantimes.co.uk/index.php?page=donate
-Tags: admin, administration, cms, page, pages, permalink, seo
+Tags: admin, administration, cms, page, pages, custom post types, permalink, seo
 Requires at least: 3.0
 Tested up to: 4.2.3
 Stable tag: 0.2.4
 
-Lock Pages prevents specified pages (or all pages) from having their slug, parent, status or password edited, or from being deleted, by non-administrators.
+Lock Pages prevents specified pages (or all pages), posts, or custom post types from having their slug, parent, status or password edited, or from being deleted, by non-administrators.
 
 == Description ==
 
-Sometimes some pages are too important to allow them to be casually moved about or deleted by site editors. An editor may think nothing of renaming a page's slug, or deleting a page to replace it with something similar, perhaps unaware of effects on SEO. Also, certain pages might be essential to keep in place because of a site's structure, or because of aspects of a custom theme.
+(NOTE: This plugin was originally designed to only lock pages, and only later added custom post type functionality. Hence the name, and sometimes the terminology will say "pages" when it means "any post type".)
 
-This plugin lets administrators "lock" any or all pages. "Locking" here basically means preventing non-admins from:
+Sometimes some pages or other posts are too important to allow them to be casually moved about or deleted by site editors. An editor may think nothing of renaming a page's slug, or deleting a page to replace it with something similar, perhaps unaware of effects on SEO. Also, certain pages might be essential to keep in place because of a site's structure, or because of aspects of a custom theme.
 
-* Editing the page's slug
-* Changing the page's parent
-* Changing the page's template
-* Deleting the page
-* Changing the page's status
-* Changing the page's password protection
+This plugin lets administrators "lock" any or all pages, and any post of any post type. "Locking" here basically means preventing non-admins from:
+
+* Editing the item's slug
+* Changing the item's parent
+* Changing the item's template
+* Deleting the item
+* Changing the item's status
+* Changing the item's password protection
 
 Locking is implemented by preventing the actual database update being performed as well as, where possible, having the interface element for that field removed. Where possible interface elements are removed via WP filters on the server; otherwise, jQuery is used on the client.
 
@@ -64,9 +66,9 @@ Of course, contributing back to the WordPress community is also a great way to e
 == Screenshots ==
 
 1. The Lock Pages settings screen
-2. The meta box on the Page Edit screen that lets you lock a specific page, if the plugin isn't set to lock all pages
-3. If a user can edit a page, but can't override a page's lock, they'll get this notice letting them know
-4. The pages list will show which pages are currently locked
+2. The meta box on the post edit screen that lets you lock a specific item
+3. If a user can edit an item, but can't override its lock, they'll get this notice letting them know
+4. The posts list will show which ones are currently locked
 
 == Changelog ==
 
