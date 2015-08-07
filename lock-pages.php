@@ -470,8 +470,17 @@ if ( ! class_exists('SLT_LockPages') ) {
 			// Basic check for "edit locked page" capability
 			$user_can = current_user_can( $this->options[$this->prefix.'capability'] );
 
-			// Override it if page isn't locked, a specific page is being edited, and scope isn't all pages
-			if ( $this->options[$this->prefix.'scope'] != "all" && $post_id && ! $this->is_page_locked( $post_id ) ) {
+			/*
+			 * Override (with user CAN edit) if:
+			 * - We've got a post ID to work with
+			 * - It's not a page, or scope for pages isn't for all, AND
+			 * - The page isn't locked
+			 */
+			if (
+				$post_id &&
+				( get_post_type( $post_id ) != 'page' || $this->options[$this->prefix.'scope'] != "all" ) &&
+				! $this->is_page_locked( $post_id )
+			) {
 				$user_can = true;
 			}
 
@@ -479,7 +488,7 @@ if ( ! class_exists('SLT_LockPages') ) {
 		}
 
 		/**
-		 * Does edit check based on submitted post ID instead of passed id
+		 * Does edit check based on submitted post ID instead of passed ID
 		 *
 		 * @since	0.3
 		 * @uses	$_POST
@@ -495,13 +504,13 @@ if ( ! class_exists('SLT_LockPages') ) {
 		* @since	0.1
 		*/
 		function is_page_locked( $post_id ) {
+			$page_is_locked = false;
 			if ( $post_id ) {
-				$locked_pages = $this->options[$this->prefix.'locked_pages'];
-				$locked_pages = explode( ',', $locked_pages );
-				return in_array( $post_id, $locked_pages );
-			} else {
-				return false;
+				$locked_pages	= $this->options[$this->prefix.'locked_pages'];
+				$locked_pages	= explode( ',', $locked_pages );
+				$page_is_locked	= in_array( $post_id, $locked_pages );
 			}
+			return $page_is_locked;
 		}
 
 		/**
@@ -545,10 +554,11 @@ if ( ! class_exists('SLT_LockPages') ) {
 		* @global	$post $pagenow
 		*/
 		function admin_body_class( $class ) {
-			global $post, $pagenow;
+			global $post;
+			$screen = get_current_screen();
 			if (
-				$pagenow == 'post.php' &&
-				$_GET["action"] == "edit" &&
+				$screen->base == 'post' &&
+				$screen->parent_base == 'edit' &&
 				! $this->user_can_edit( $post->ID )
 			) {
 				$class .= ' page-locked';
