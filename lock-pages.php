@@ -58,9 +58,9 @@ if ( ! class_exists('SLT_LockPages') ) {
 			$mo = dirname( __FILE__ ) . "/languages/" . $this->localization_domain . "-" . $locale . ".mo";
 			load_textdomain( $this->localization_domain, $mo );
 
-			// Initialize the options
+			// Load the options
 			// This is REQUIRED to initialize the options when the plugin is loaded!
-			$this->get_options();
+			$this->load_options();
 
 			// Initialize hooks
 			add_action( 'admin_init', array( &$this, 'add_hooks' ) );
@@ -429,7 +429,6 @@ if ( ! class_exists('SLT_LockPages') ) {
 
 			// Get list of locked posts
 			$locked_posts = $this->options[$this->prefix.'locked_pages'];
-			$locked_posts = explode( ',', $locked_posts );
 			$update = false;
 
 			if ( isset( $_POST[$this->prefix.'locked'] ) && $_POST[$this->prefix.'locked'] ) {
@@ -449,7 +448,6 @@ if ( ! class_exists('SLT_LockPages') ) {
 
 			// Need to update?
 			if ( $update ) {
-				$locked_posts = implode( ',', $locked_posts );
 				$this->options[$this->prefix.'locked_pages'] = $locked_posts;
 				$this->save_admin_options();
 			}
@@ -506,9 +504,7 @@ if ( ! class_exists('SLT_LockPages') ) {
 		function is_page_locked( $post_id ) {
 			$page_is_locked = false;
 			if ( $post_id ) {
-				$locked_pages	= $this->options[$this->prefix.'locked_pages'];
-				$locked_pages	= explode( ',', $locked_pages );
-				$page_is_locked	= in_array( $post_id, $locked_pages );
+				$page_is_locked	= in_array( $post_id, $this->options[$this->prefix.'locked_pages'] );
 			}
 			return $page_is_locked;
 		}
@@ -568,24 +564,41 @@ if ( ! class_exists('SLT_LockPages') ) {
 
 
 		/**
-		* Retrieves the plugin options from the database.
+		* Loads the plugin options from the database.
 		* @return	array
 		* @since	0.1
 		* @uses		update_option()
 		*/
-		function get_options() {
+		function load_options() {
 
-			// Don't forget to set up the default options
+			// Are the options present?
 			if ( ! $the_options = get_option( $this->options_name ) ) {
+
+				// Set defaults
 				$the_options = array(
 					$this->prefix.'capability'		=> 'manage_options',
 					$this->prefix.'scope'			=> 'locked',
 					$this->prefix.'post_types'		=> array(),
-					$this->prefix.'locked_pages'	=> '',
+					$this->prefix.'locked_pages'	=> array(),
 				);
-				update_option($this->options_name, $the_options);
+
+				// Save to database
+				update_option( $this->options_name, $the_options );
+
+			} else {
+
+				/**
+				 * Convert locked pages list to array if necessary (used to be comma-delimited string)
+				 * @since	0.3
+				 */
+				if ( ! is_array( $the_options[ $this->prefix . 'locked_pages' ] ) ) {
+					$the_options[ $this->prefix . 'locked_pages' ] = explode( ',', $the_options[ $this->prefix . 'locked_pages' ] );
+					update_option( $this->options_name, $the_options );
+				}
+
 			}
 
+			// Set options
 			$this->options = $the_options;
 		}
 
