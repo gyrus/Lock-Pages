@@ -273,35 +273,46 @@ if ( ! class_exists('SLT_LockPages') ) {
 		* @param	array		$allcaps		Capabilities granted to user
 		* @param	array		$caps			Capabilities being checked
 		* @param	array		$args			Optional arguments being passed
-		* @global	$post
 		* @return	array
 		*/
 		function lock_deletion( $allcaps, $caps, $args ) {
-			global $post;
 			$cap_check	= count( $args ) ? $args[0] : '';
 			$user_id	= count( $args ) > 1 ? $args[1] : 0;
-			$post_id	= count( $args ) > 2 ? $args[2] : 0;
+			$object_id	= count( $args ) > 2 ? $args[2] : 0;
 
-			// Is the check for deleting a page?
-			if ( ( $cap_check == "delete_page" || $cap_check == "delete_post" ) && $post_id && is_object( $post ) && property_exists( $post, 'post_type' ) && $post->post_type == "page" ) {
+			// Is the check for deleting a post?
+			if ( strlen( $cap_check ) > 7 && substr( $cap_check, 0, 7 ) == "delete_" ) {
 
-				// Basic check for "edit locked page" capability
-				$user_can = array_key_exists( $this->options[$this->prefix.'capability'], $allcaps ) && $allcaps[ $this->options[$this->prefix.'capability'] ];
-
-				// Override it if page isn't locked and scope isn't all pages
-				if ( $this->options[$this->prefix.'scope'] != "all" && ! $this->is_page_locked( $post_id ) ) {
-					$user_can = true;
-				}
-
-				// If user isn't able to touch this page, remove delete capabilities
-				if ( ! $user_can ) {
-					foreach( $allcaps as $cap => $value ) {
-						if ( strpos( $cap, "delete_" ) !== false && ( strpos( $cap, "pages" ) !== false || strpos( $cap, "posts" ) !== false ) ) {
-							unset( $allcaps[$cap] );
-						}
+				// Go through all lockable post types and see if the cap check if for deleting one in some way
+				$post_deletion_check = false;
+				foreach ( $this->get_lockable_post_types() as $lockable_post_type ) {
+					if ( strpos( $cap_check, $lockable_post_type ) !== false ) {
+						$post_deletion_check = true;
+						break;
 					}
 				}
 
+				if ( $post_deletion_check && $object_id ) {
+
+					// Is post type lockable, and is post locked?
+					if ( $this->is_post_type_lockable( get_post_type( $object_id ) ) && ! $this->user_can_edit( $object_id ) ) {
+
+						// Remove delete capabilities
+						foreach( $allcaps as $cap => $value ) {
+							if ( strpos( $cap, "delete_" ) !== false ) {
+								// Go through it all again
+								foreach ( $this->get_lockable_post_types() as $lockable_post_type ) {
+									if ( strpos( $cap, $lockable_post_type ) !== false ) {
+										unset( $allcaps[ $cap ] );
+										break;
+									}
+								}
+							}
+						}
+
+					}
+
+				}
 			}
 
 			return $allcaps;
@@ -334,10 +345,11 @@ if ( ! class_exists('SLT_LockPages') ) {
 		* @global	$post $pagenow
 		*/
 		function output_page_locked_notice() {
-			global $post, $pagenow;
+			global $post;
+			$screen = get_current_screen();
 			if (
-				$pagenow == 'post.php' &&
-				$_GET["action"] == "edit" &&
+				$screen->base == 'post' &&
+				$screen->parent_base == 'edit' &&
 				! $this->user_can_edit( $post->ID )
 			) {
 				if ( get_post_type() == 'page' ) {
@@ -494,13 +506,24 @@ if ( ! class_exists('SLT_LockPages') ) {
 		}
 
 		/**
+		 * Returns array of post types available for locking
+		 *
+		 * @since	0.3
+		 * @return	array
+		 */
+		function get_lockable_post_types() {
+			return array_push( $this->options[$this->prefix.'post_types'], 'page' );
+		}
+
+		/**
 		 * Checks if a post type is available for locking
+		 *
 		 * @param	string	$post_type
 		 * @return	bool
 		 * @since	0.3
 		 */
 		function is_post_type_lockable( $post_type ) {
-			return ( $post_type == 'page' ) || in_array( $post_type, $this->options[$this->prefix.'post_types'] );
+			return in_array( $post_type, $this->get_lockable_post_types() );
 		}
 
 		/**
