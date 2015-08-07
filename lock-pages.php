@@ -184,7 +184,7 @@ if ( ! class_exists('SLT_LockPages') ) {
 		*/
 		function pages_list_col_value( $column_name, $id ) {
 			if ( $column_name == "post-locked" ) {
-				echo $this->is_page_locked( $id ) ? '<img src="' . plugins_url( 'lock.png', __FILE__ ) . '" width="16" height="16" alt="' . __( 'Locked', $this->localization_domain ) . '" />' : '&nbsp;';
+				echo $this->is_page_locked( $id ) ? '<span class="dashicons dashicons-lock" title="' . __( 'Locked', $this->localization_domain ) . '"></span>' : '&nbsp;';
 			}
 		}
 
@@ -353,9 +353,9 @@ if ( ! class_exists('SLT_LockPages') ) {
 				! $this->user_can_edit( $post->ID )
 			) {
 				if ( get_post_type() == 'page' ) {
-					echo '<div class="updated page-locked-notice"><p>' . __( 'Please note that this page is currently locked.', $this->localization_domain ) . '</p></div>';
+					echo '<div class="updated page-locked-notice"><p><span class="dashicons dashicons-lock"></span>' . __( 'Please note that this page is currently locked.', $this->localization_domain ) . '</p></div>';
 				} else {
-					echo '<div class="updated page-locked-notice"><p>' . __( 'Please note that this item is currently locked.', $this->localization_domain ) . '</p></div>';
+					echo '<div class="updated page-locked-notice"><p><span class="dashicons dashicons-lock"></span>' . __( 'Please note that this item is currently locked.', $this->localization_domain ) . '</p></div>';
 				}
 			}
 		}
@@ -539,8 +539,8 @@ if ( ! class_exists('SLT_LockPages') ) {
 		* @uses	wp_enqueue_script() wp_enqueue_style()
 		*/
 		function load_js_css() {
-			wp_enqueue_script( $this->prefix . '_js', plugins_url( 'lock-pages.js', __FILE__ ), array( 'jquery' ) );
-			wp_enqueue_style( $this->prefix . '_css', plugins_url( 'lock-pages.css', __FILE__ ) );
+			wp_enqueue_script( $this->prefix . '_js', plugins_url( 'lock-pages.js', __FILE__ ), array( 'jquery' ), '3.0' );
+			wp_enqueue_style( $this->prefix . '_css', plugins_url( 'lock-pages.css', __FILE__ ), array(), '3.0' );
 		}
 
 		/**

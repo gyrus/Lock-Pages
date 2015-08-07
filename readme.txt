@@ -72,6 +72,7 @@ Of course, contributing back to the WordPress community is also a great way to e
 
 = 0.3 (????-??-??)
 * Added locking of posts and custom post types
+* Changed PNG lock icon to dashicon
 * Changed admin headings to H1
 
 = 0.2.4 =
