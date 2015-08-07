@@ -71,6 +71,7 @@ Of course, contributing back to the WordPress community is also a great way to e
 == Changelog ==
 
 = 0.3 (????-??-??)
+* Added locking of posts and custom post types
 * Changed admin headings to H1
 
 = 0.2.4 =
