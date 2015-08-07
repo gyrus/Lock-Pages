@@ -374,8 +374,7 @@ if ( ! class_exists('SLT_LockPages') ) {
 				( $post_type != 'page' || $this->options[$this->prefix.'scope'] != "all" ) &&
 				current_user_can( $this->options[$this->prefix.'capability'] )
 			) {
-				$title = ( $post_type == 'page' ) ? __( 'Page locking', $this->localization_domain ) : __( 'Item locking', $this->localization_domain );
-				add_meta_box( $this->prefix.'_meta-box', $title, array( &$this, 'output_meta_box' ), $post_type, 'side', 'high' );
+				add_meta_box( $this->prefix.'_meta-box', __( 'Lock Pages', $this->localization_domain ), array( &$this, 'output_meta_box' ), $post_type, 'side', 'high' );
 			}
 		}
 
