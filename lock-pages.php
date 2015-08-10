@@ -349,13 +349,13 @@ if ( ! class_exists('SLT_LockPages') ) {
 			$screen = get_current_screen();
 			if (
 				$screen->base == 'post' &&
-				$screen->parent_base == 'edit' &&
+				$_GET['action'] == 'edit' &&
 				! $this->user_can_edit( $post->ID )
 			) {
 				if ( get_post_type() == 'page' ) {
-					echo '<div class="updated page-locked-notice"><p><span class="dashicons dashicons-lock"></span>' . __( 'Please note that this page is currently locked.', $this->localization_domain ) . '</p></div>';
+					echo '<div class="updated page-locked-notice"><p><span class="dashicons dashicons-lock"></span>' . __( 'Please note that this page is locked, and certain changes are restricted.', $this->localization_domain ) . '</p></div>';
 				} else {
-					echo '<div class="updated page-locked-notice"><p><span class="dashicons dashicons-lock"></span>' . __( 'Please note that this item is currently locked.', $this->localization_domain ) . '</p></div>';
+					echo '<div class="updated page-locked-notice"><p><span class="dashicons dashicons-lock"></span>' . __( 'Please note that this item is locked, and certain changes are restricted.', $this->localization_domain ) . '</p></div>';
 				}
 			}
 		}
