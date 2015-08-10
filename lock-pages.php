@@ -554,7 +554,7 @@ if ( ! class_exists('SLT_LockPages') ) {
 			$screen = get_current_screen();
 			if (
 				$screen->base == 'post' &&
-				$screen->parent_base == 'edit' &&
+				$_GET['action'] == 'edit' &&
 				! $this->user_can_edit( $post->ID )
 			) {
 				$class .= ' page-locked';
