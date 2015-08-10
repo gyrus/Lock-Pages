@@ -204,7 +204,7 @@ if ( ! class_exists('SLT_LockPages') ) {
 		}
 
 		/**
-		* Prevents unauthorized users changing a page's status.
+		* Prevents unauthorized users changing a page's template.
 		*
 		* @since	0.2
 		* @return	string
@@ -212,7 +212,7 @@ if ( ! class_exists('SLT_LockPages') ) {
 		function lock_template( $template ) {
 			// Can user edit this page?
 			if ( ! $this->user_can_edit_submitted_post() ) {
-				// Keep old status, user can't change it
+				// Keep old template, user can't change it
 				$template = $_POST[ $this->prefix . 'old_page_template' ];
 			}
 			return $template;
