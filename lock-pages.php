@@ -345,13 +345,7 @@ if ( ! class_exists('SLT_LockPages') ) {
 		* @global	$post $pagenow
 		*/
 		function output_page_locked_notice() {
-			global $post;
-			$screen = get_current_screen();
-			if (
-				$screen->base == 'post' &&
-				$_GET['action'] == 'edit' &&
-				! $this->user_can_edit( $post->ID )
-			) {
+			if ( $this->is_page_locked_for_current_user() ) {
 				if ( get_post_type() == 'page' ) {
 					echo '<div class="updated page-locked-notice"><p><span class="dashicons dashicons-lock"></span>' . __( 'Please note that this page is locked, and certain changes are restricted.', $this->localization_domain ) . '</p></div>';
 				} else {
@@ -510,6 +504,22 @@ if ( ! class_exists('SLT_LockPages') ) {
 		}
 
 		/**
+		 * Checks if the current admin page is editing an item that is locked for the current user
+		 *
+		 * @return	bool
+		 * @since	0.3
+		 */
+		function is_page_locked_for_current_user() {
+			global $post;
+			$screen = get_current_screen();
+			return (
+				$screen->base == 'post' &&
+				$_GET['action'] == 'edit' &&
+				! $this->user_can_edit( $post->ID )
+			);
+		}
+
+		/**
 		 * Returns array of post types available for locking
 		 *
 		 * @since	0.3
@@ -550,13 +560,7 @@ if ( ! class_exists('SLT_LockPages') ) {
 		* @global	$post $pagenow
 		*/
 		function admin_body_class( $class ) {
-			global $post;
-			$screen = get_current_screen();
-			if (
-				$screen->base == 'post' &&
-				$_GET['action'] == 'edit' &&
-				! $this->user_can_edit( $post->ID )
-			) {
+			if ( $this->is_page_locked_for_current_user() ) {
 				$class .= ' page-locked';
 			}
    			return $class;
