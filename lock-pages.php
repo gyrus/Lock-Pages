@@ -527,6 +527,9 @@ if ( ! class_exists('SLT_LockPages') ) {
 		 */
 		function get_lockable_post_types() {
 			$lockable_post_types = $this->options[$this->prefix.'post_types'];
+			if ( ! is_array( $lockable_post_types ) ) {
+				$lockable_post_types = array();
+			}
 			array_push( $lockable_post_types, 'page' );
 			return $lockable_post_types;
 		}
@@ -734,7 +737,7 @@ if ( ! class_exists('SLT_LockPages') ) {
 								unset( $post_types['attachment'] );
 								unset( $post_types['page'] );
 								foreach ( $post_types as $post_type ) {
-									echo '<div><label for="' . esc_attr( $this->prefix ) . 'post_types_' . $post_type . '"><input type="checkbox" name="' . esc_attr( $this->prefix ) . 'post_types[]" id="' . esc_attr( $this->prefix ) . 'post_types_' . $post_type . '" value="' . $post_type . '" ' . checked( in_array( $post_type, $this->options[$this->prefix.'post_types'] ), true, false ) . '> ' . $post_type . '</label></div>';
+									echo '<div><label for="' . esc_attr( $this->prefix ) . 'post_types_' . $post_type . '"><input type="checkbox" name="' . esc_attr( $this->prefix ) . 'post_types[]" id="' . esc_attr( $this->prefix ) . 'post_types_' . $post_type . '" value="' . $post_type . '" ' . checked( is_array( $this->options[$this->prefix.'post_types'] ) && in_array( $post_type, $this->options[$this->prefix.'post_types'] ), true, false ) . '> ' . $post_type . '</label></div>';
 								}
 								?>
 							</td>
