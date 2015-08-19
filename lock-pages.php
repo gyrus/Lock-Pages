@@ -157,7 +157,7 @@ if ( ! class_exists('SLT_LockPages') ) {
 		}
 
 		/**
-		* Add lock column to admin pages list.
+		* Add lock column to admin lists.
 		*
 		* @since	0.1.2
 		* @param	array		$cols		The columns
@@ -175,7 +175,7 @@ if ( ! class_exists('SLT_LockPages') ) {
 		}
 
 		/**
-		* Add lock indicator to admin pages list.
+		* Add lock indicator to admin lists.
 		*
 		* @since		0.1.2
 		* @param		string		$column_name		The column name
@@ -353,7 +353,6 @@ if ( ! class_exists('SLT_LockPages') ) {
 				}
 			}
 		}
-
 
 		/**
  		* Adds the meta box to the page edit screen if the current scope isn't to lock all pages.

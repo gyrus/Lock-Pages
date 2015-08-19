@@ -3,8 +3,8 @@ Contributors: gyrus
 Donate link: http://www.babyloniantimes.co.uk/index.php?page=donate
 Tags: admin, administration, cms, page, pages, custom post types, permalink, seo
 Requires at least: 3.0
-Tested up to: 4.2.3
-Stable tag: 0.2.4
+Tested up to: 4.3
+Stable tag: 0.3
 
 Lock Pages prevents specified pages (or all pages), posts, or custom post types from having their slug, parent, status or password edited, or from being deleted, by non-administrators.
 
@@ -72,7 +72,7 @@ Of course, contributing back to the WordPress community is also a great way to e
 
 == Changelog ==
 
-= 0.3 (????-??-??)
+= 0.3 (2015-08-19) =
 * Added locking of posts and custom post types
 * Changed PNG lock icon to dashicon
 * Changed admin headings to H1
