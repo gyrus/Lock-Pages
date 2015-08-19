@@ -115,7 +115,7 @@ if ( ! class_exists('SLT_LockPages') ) {
 		*/
 		function remove_slug_meta_box( $post_type, $post ) {
 			if ( ! $this->user_can_edit( $post->ID ) ) {
-				remove_meta_box( 'slugdiv', 'page', 'normal' );
+				remove_meta_box( 'slugdiv', $post_type, 'normal' );
 			}
 		}
 
