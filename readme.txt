@@ -72,6 +72,9 @@ Of course, contributing back to the WordPress community is also a great way to e
 
 == Changelog ==
 
+= 0.3.1 (????-??-??) =
+* Fixed minor PHP errors
+
 = 0.3 (2015-08-19) =
 * Added locking of posts and custom post types
 * Changed PNG lock icon to dashicon

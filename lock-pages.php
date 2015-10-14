@@ -4,7 +4,7 @@ Plugin Name: Lock Pages
 Plugin URI: http://wordpress.org/extend/plugins/lock-pages/
 Description: Allows admins to lock pages in order to prevent breakage of important URLs.
 Author: Steve Taylor
-Version: 0.3
+Version: 0.3.1
 Author URI: http://sltaylor.co.uk
 Based on: http://pressography.com/plugins/wordpress-plugin-template/
 */
@@ -513,7 +513,7 @@ if ( ! class_exists('SLT_LockPages') ) {
 			$screen = get_current_screen();
 			return (
 				$screen->base == 'post' &&
-				$_GET['action'] == 'edit' &&
+				( isset( $_GET['action'] ) && $_GET['action'] == 'edit' ) &&
 				! $this->user_can_edit( $post->ID )
 			);
 		}
