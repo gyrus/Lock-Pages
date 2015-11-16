@@ -458,8 +458,8 @@ if ( ! class_exists('SLT_LockPages') ) {
 		*/
 		function user_can_edit( $post_id = 0 ) {
 
-			// Basic check for "edit locked page" capability
-			$user_can = current_user_can( $this->options[$this->prefix.'capability'] );
+			// Basic check for "edit locked page" capability and "protect from all"
+			$user_can = current_user_can( $this->options[$this->prefix.'capability'] ) && ! $this->options[$this->prefix.'protect_from_all'];
 
 			/*
 			 * Override (with user CAN edit) if:
@@ -582,10 +582,11 @@ if ( ! class_exists('SLT_LockPages') ) {
 
 				// Set defaults
 				$the_options = array(
-					$this->prefix.'capability'		=> 'manage_options',
-					$this->prefix.'scope'			=> 'locked',
-					$this->prefix.'post_types'		=> array(),
-					$this->prefix.'locked_pages'	=> array(),
+					$this->prefix.'capability'			=> 'manage_options',
+					$this->prefix.'protect_from_all'	=> false,
+					$this->prefix.'scope'				=> 'locked',
+					$this->prefix.'post_types'			=> array(),
+					$this->prefix.'locked_pages'		=> array(),
 				);
 
 				// Save to database
@@ -654,6 +655,7 @@ if ( ! class_exists('SLT_LockPages') ) {
 					die( __( 'Whoops! There was a problem with the data you posted. Please go back and try again.', $this->localization_domain ) );
 
 				$this->options[$this->prefix.'capability'] = $_POST[$this->prefix.'capability'];
+				$this->options[$this->prefix.'protect_from_all'] = isset( $_POST[$this->prefix.'protect_from_all'] );
 				$this->options[$this->prefix.'scope'] = $_POST[$this->prefix.'scope'];
 				$this->options[$this->prefix.'post_types'] = $_POST[$this->prefix.'post_types'];
 				$this->save_admin_options();
@@ -716,8 +718,13 @@ if ( ! class_exists('SLT_LockPages') ) {
 					<table width="100%" cellspacing="2" cellpadding="5" class="form-table">
 
 						<tr valign="top">
-							<th width="33%" scope="row"><label for="<?php echo esc_attr( $this->prefix ); ?>capability"><?php _e( 'WP capability needed to edit locked page elements', $this->localization_domain ); ?></label></th>
+							<th width="33%" scope="row"><label for="<?php echo esc_attr( $this->prefix ); ?>capability"><?php _e( 'Capability needed to manage locking', $this->localization_domain ); ?></label></th>
 							<td><input name="<?php echo esc_attr( $this->prefix ); ?>capability" type="text" id="<?php echo esc_attr( $this->prefix ); ?>capability" size="45" value="<?php echo esc_attr( $this->options[$this->prefix.'capability'] ); ?>"/></td>
+						</tr>
+
+						<tr valign="top">
+							<th width="33%" scope="row"><label for="<?php echo esc_attr( $this->prefix ); ?>protect_from_all"><?php _e( 'Protect locked posts even from users with locking capability', $this->localization_domain ); ?></label></th>
+							<td style="vertical-align: top;"><input name="<?php echo esc_attr( $this->prefix ); ?>protect_from_all" type="checkbox" id="<?php echo esc_attr( $this->prefix ); ?>protect_from_all" value="1" <?php checked( $this->options[$this->prefix.'protect_from_all'] ); ?>></td>
 						</tr>
 
 						<tr valign="top">
