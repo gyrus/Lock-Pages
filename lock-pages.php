@@ -184,7 +184,13 @@ if ( ! class_exists('SLT_LockPages') ) {
 		*/
 		function pages_list_col_value( $column_name, $id ) {
 			if ( $column_name == "post-locked" ) {
-				echo $this->is_page_locked( $id ) ? '<span class="dashicons dashicons-lock" title="' . __( 'Locked', $this->localization_domain ) . '"></span>' : '&nbsp;';
+				// Post is locked if:
+				// - This isn't a page OR the scope is for locking only specified pages, AND the post lock is set
+				// - This is a page AND the scope is for locking pages not specified, AND the post lock isn't set
+				// - (Indicator not output for pages when scope is to lock all pages)
+				$post_locked =	( ( get_post_type( $id ) != 'page' || $this->options[$this->prefix.'scope'] == 'locked' ) && $this->is_page_locked( $id ) ) ||
+								( ( get_post_type( $id ) != 'page' || $this->options[$this->prefix.'scope'] == 'not-locked' ) && ! $this->is_page_locked( $id ) );
+				echo $post_locked ? '<span class="dashicons dashicons-lock" title="' . __( 'Locked', $this->localization_domain ) . '"></span>' : '&nbsp;';
 			}
 		}
 
@@ -386,7 +392,12 @@ if ( ! class_exists('SLT_LockPages') ) {
 					<input type="checkbox" name="<?php echo esc_attr( $this->prefix ); ?>locked" id="<?php echo $this->prefix; ?>locked"<?php if ( $this->is_page_locked( $post->ID ) ) echo ' checked="checked"'; ?> value="true" />
 					<?php
 					if ( get_post_type() == 'page' ) {
-						_e( 'Lock this page', $this->localization_domain );
+						// If this is a page, need to check scope to decide on significance of checkbox
+						if ( $this->options[$this->prefix.'scope'] == 'not-locked' ) {
+							_e( 'Unlock this page', $this->localization_domain );
+						} else {
+							_e( 'Lock this page', $this->localization_domain );
+						}
 					} else {
 						_e( 'Lock this item', $this->localization_domain );
 					}
@@ -458,21 +469,26 @@ if ( ! class_exists('SLT_LockPages') ) {
 		*/
 		function user_can_edit( $post_id = 0 ) {
 
-			// Basic check for "edit locked page" capability and "protect from all"
-			$user_can = current_user_can( $this->options[$this->prefix.'capability'] ) && ! $this->options[$this->prefix.'protect_from_all'];
+			// Play safe
+			$user_can = false;
 
-			/*
-			 * Override (with user CAN edit) if:
-			 * - We've got a post ID to work with
-			 * - It's not a page, or scope for pages isn't for all, AND
-			 * - The page isn't locked
-			 */
-			if (
-				$post_id &&
-				( get_post_type( $post_id ) != 'page' || $this->options[$this->prefix.'scope'] != "all" ) &&
-				! $this->is_page_locked( $post_id )
-			) {
+			// Can the user edit something even if it's locked?
+			if ( current_user_can( $this->options[$this->prefix.'capability'] ) && ! $this->options[$this->prefix.'protect_from_all'] ) {
 				$user_can = true;
+
+			} else if ( $post_id ) {
+
+				// Is it "locked"? (this can mean "not locked" depending on scope)
+				$post_is_locked = $this->is_page_locked( $post_id );
+
+				// Need to invert "locked" indicator?
+				if ( get_post_type( $post_id ) == 'page' && $this->options[$this->prefix.'scope'] == "not-locked" ) {
+					$post_is_locked = ! $post_is_locked;
+				}
+
+				// Update accordingly
+				$user_can = ! $post_is_locked;
+
 			}
 
 			return $user_can;
@@ -731,13 +747,15 @@ if ( ! class_exists('SLT_LockPages') ) {
 							<th width="33%" scope="row"><?php _e( 'Scope for locking pages', $this->localization_domain ); ?></th>
 							<td>
 								<input name="<?php echo esc_attr( $this->prefix ); ?>scope" type="radio" id="<?php echo esc_attr( $this->prefix ); ?>scope_locked" value="locked"<?php if ( $this->options[$this->prefix.'scope']=="locked" ) echo ' checked="checked"'; ?> /> <label for="<?php echo esc_attr( $this->prefix ); ?>scope_locked"><?php _e( 'Lock only specified pages', $this->localization_domain ); ?></label><br />
-								<input name="<?php echo esc_attr( $this->prefix ); ?>scope" type="radio" id="<?php echo esc_attr( $this->prefix ); ?>scope_locked" value="all"<?php if ( $this->options[$this->prefix.'scope']=="all" ) echo ' checked="checked"'; ?> /> <label for="<?php echo esc_attr( $this->prefix ); ?>scope_all"><?php _e( 'Lock all pages', $this->localization_domain ); ?></label>
+								<input name="<?php echo esc_attr( $this->prefix ); ?>scope" type="radio" id="<?php echo esc_attr( $this->prefix ); ?>scope_locked" value="all"<?php if ( $this->options[$this->prefix.'scope']=="all" ) echo ' checked="checked"'; ?> /> <label for="<?php echo esc_attr( $this->prefix ); ?>scope_all"><?php _e( 'Lock all pages', $this->localization_domain ); ?></label><br />
+								<input name="<?php echo esc_attr( $this->prefix ); ?>scope" type="radio" id="<?php echo esc_attr( $this->prefix ); ?>scope_locked" value="not-locked"<?php if ( $this->options[$this->prefix.'scope']=="not-locked" ) echo ' checked="checked"'; ?> /> <label for="<?php echo esc_attr( $this->prefix ); ?>scope_locked"><?php _e( 'Lock all pages except those specified', $this->localization_domain ); ?></label>
 							</td>
 						</tr>
 
 						<tr valign="top">
 							<th width="33%" scope="row"><?php _e( 'Other post types available for locking', $this->localization_domain ); ?></th>
 							<td>
+								<p class="description"><?php _e( 'Note that for non-page post types, only specified posts get locked.', $this->localization_domain ); ?></p><br>
 								<?php
 								$post_types = get_post_types( array( 'public' => true ) );
 								unset( $post_types['attachment'] );
