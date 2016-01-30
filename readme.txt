@@ -74,6 +74,7 @@ Of course, contributing back to the WordPress community is also a great way to e
 
 = 0.3.1 (????-??-??) =
 * Added 'protect from all' option, to allow lock protection to apply even if user has capability to lock posts
+* Added proper defaulting for updates, to include new option defaults (thanks Kevin VandeKrol!)
 * Fixed minor PHP errors
 
 = 0.3 (2015-08-19) =

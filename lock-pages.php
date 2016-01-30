@@ -577,22 +577,33 @@ if ( ! class_exists('SLT_LockPages') ) {
 		*/
 		function load_options() {
 
+			// Defaults
+			$defaults = array(
+				$this->prefix.'capability'			=> 'manage_options',
+				$this->prefix.'protect_from_all'	=> false,
+				$this->prefix.'scope'				=> 'locked',
+				$this->prefix.'post_types'			=> array(),
+				$this->prefix.'locked_pages'		=> array(),
+			);
+			$do_update = false;
+
 			// Are the options present?
 			if ( ! $the_options = get_option( $this->options_name ) ) {
 
-				// Set defaults
-				$the_options = array(
-					$this->prefix.'capability'			=> 'manage_options',
-					$this->prefix.'protect_from_all'	=> false,
-					$this->prefix.'scope'				=> 'locked',
-					$this->prefix.'post_types'			=> array(),
-					$this->prefix.'locked_pages'		=> array(),
-				);
-
-				// Save to database
-				update_option( $this->options_name, $the_options );
+				// Set to defaults
+				$the_options = $defaults;
+				$do_update = true;
 
 			} else {
+
+				/**
+				 * Merge with defaults
+				 * @since 0.3.1
+				 */
+				if ( count( $the_options ) < count( $defaults ) ) {
+					$the_options = wp_parse_args( $the_options, $defaults );
+					$do_update = true;
+				}
 
 				/**
 				 * Convert locked pages list to array if necessary (used to be comma-delimited string)
@@ -600,9 +611,14 @@ if ( ! class_exists('SLT_LockPages') ) {
 				 */
 				if ( ! is_array( $the_options[ $this->prefix . 'locked_pages' ] ) ) {
 					$the_options[ $this->prefix . 'locked_pages' ] = explode( ',', $the_options[ $this->prefix . 'locked_pages' ] );
-					update_option( $this->options_name, $the_options );
+					$do_update = true;
 				}
 
+			}
+
+			// Do update?
+			if ( $do_update ) {
+				update_option( $this->options_name, $the_options );
 			}
 
 			// Set options
@@ -657,7 +673,7 @@ if ( ! class_exists('SLT_LockPages') ) {
 				$this->options[$this->prefix.'capability'] = $_POST[$this->prefix.'capability'];
 				$this->options[$this->prefix.'protect_from_all'] = isset( $_POST[$this->prefix.'protect_from_all'] );
 				$this->options[$this->prefix.'scope'] = $_POST[$this->prefix.'scope'];
-				$this->options[$this->prefix.'post_types'] = $_POST[$this->prefix.'post_types'];
+				$this->options[$this->prefix.'post_types'] = empty( $_POST[$this->prefix.'post_types'] ) ? array() : $_POST[$this->prefix.'post_types'];
 				$this->save_admin_options();
 				$updated = true;
 
