@@ -3,7 +3,7 @@ Contributors: gyrus
 Donate link: http://www.babyloniantimes.co.uk/index.php?page=donate
 Tags: admin, administration, cms, page, pages, custom post types, permalink, seo
 Requires at least: 3.0
-Tested up to: 4.3
+Tested up to: 4.4.1
 Stable tag: 0.3
 
 Lock Pages prevents specified pages (or all pages), posts, or custom post types from having their slug, parent, status or password edited, or from being deleted, by non-administrators.
