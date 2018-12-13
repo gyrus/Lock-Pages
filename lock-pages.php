@@ -100,7 +100,7 @@ if ( ! class_exists('SLT_LockPages') ) {
 			add_filter( 'page_template_pre', array( &$this, 'lock_template' ), 0 );
 			add_filter( 'status_save_pre', array( &$this, 'lock_status' ), 0 );
 			add_filter( 'password_save_pre', array( &$this, 'lock_password' ), 0 );
-			add_filter( 'user_has_cap', array( &$this, 'lock_deletion' ), 0, 3 );
+			add_filter( 'user_has_cap', array( &$this, 'lock_deletion' ), 0, 4 );
 
 		}
 
@@ -273,24 +273,43 @@ if ( ! class_exists('SLT_LockPages') ) {
 		* @param	array		$allcaps		Capabilities granted to user
 		* @param	array		$caps			Capabilities being checked
 		* @param	array		$args			Optional arguments being passed
+		* @param	object		$user			The user object
 		* @return	array
 		*/
-		function lock_deletion( $allcaps, $caps, $args ) {
-			$cap_check	= count( $args ) ? $args[0] : '';
+		function lock_deletion( $allcaps, $caps, $args, $user ) {
+			$cap_check	= count( $args ) ? $args[0] : array();
 			$user_id	= count( $args ) > 1 ? $args[1] : 0;
 			$object_id	= count( $args ) > 2 ? $args[2] : 0;
 
-			// Is the check for deleting a post?
-			if ( strlen( $cap_check ) > 7 && substr( $cap_check, 0, 7 ) == "delete_" ) {
+			// $cap_check may be a single cap or an array of caps
+			if ( ! is_array( $cap_check ) ) :
+				$cap_check = array( $cap_check );
+			endif;
 
-				// Go through all lockable post types and see if the cap check if for deleting one in some way
+			// Is the check for deleting a post?
+			$deleting_a_post = false;
+			foreach ( $cap_check as $cap_being_checked ) :
+				if ( strlen( $cap_being_checked ) > 7 && substr( $cap_being_checked, 0, 7 ) == "delete_" ) :
+					$deleting_a_post = true;
+					break;
+				endif;
+			endforeach;
+
+			if ( $deleting_a_post ) {
+
+				// Go through all lockable post types and see if the cap check is for deleting one in some way
 				$post_deletion_check = false;
-				foreach ( $this->get_lockable_post_types() as $lockable_post_type ) {
-					if ( strpos( $cap_check, $lockable_post_type ) !== false ) {
-						$post_deletion_check = true;
+				foreach ( $this->get_lockable_post_types() as $lockable_post_type ) :
+					foreach ( $cap_check as $cap_being_checked ) :
+						if ( strpos( $cap_being_checked, $lockable_post_type ) !== false ) :
+							$post_deletion_check = true;
+							break;
+						endif;
+					endforeach;
+					if ( $post_deletion_check ) :
 						break;
-					}
-				}
+					endif;
+				endforeach;
 
 				if ( $post_deletion_check && $object_id ) {
 
