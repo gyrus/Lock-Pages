@@ -3,8 +3,8 @@ Contributors: gyrus
 Donate link: http://www.babyloniantimes.co.uk/index.php?page=donate
 Tags: admin, administration, cms, page, pages, custom post types, permalink, seo
 Requires at least: 3.0
-Tested up to: 4.4.1
-Stable tag: 0.3
+Tested up to: 5.0.1
+Stable tag: 0.3.1
 
 Lock Pages prevents specified pages (or all pages), posts, or custom post types from having their slug, parent, status or password edited, or from being deleted, by non-administrators.
 
@@ -27,7 +27,9 @@ Locking is implemented by preventing the actual database update being performed 
 
 NOTE: Currently, I've been unable to get this working with the Quick Edit functionality. As a stop-gap measure, which is only in place because it seems to be better than nothing, the Quick Edit link is removed for users who can't edit locked pages. I know, it's not great. But until I work out how to selectively block Quick Editing, I'm assuming a locked page should be locked. Users can always edit the other fields via the normal edit page.
 
-Development code hosted at [GitHub](https://github.com/gyrus/Lock-Pages).
+NOTE: This plugin is not tested with Gutenberg, and we have no near-term plans to do so. Please use the Classic Editor if there are problems.
+
+Go to GitHub for [development code](https://github.com/gyrus/Lock-Pages) and [issue tracking](https://github.com/gyrus/Lock-Pages/issues).
 
 == Installation ==
 
@@ -72,10 +74,10 @@ Of course, contributing back to the WordPress community is also a great way to e
 
 == Changelog ==
 
-= 0.3.1 (????-??-??) =
+= 0.3.1 (2018-12-18) =
 * Added 'protect from all' option, to allow lock protection to apply even if user has capability to lock posts
 * Added proper defaulting for updates, to include new option defaults (thanks Kevin VandeKrol!)
-* Fixed issue with 4th paramter for `user_has_caps` filter, and issue with arrays passed for `$args[0]`
+* Fixed issue with 4th parameter for `user_has_caps` filter, and issue with arrays passed for `$args[0]`
 * Fixed minor PHP errors
 
 = 0.3 (2015-08-19) =
