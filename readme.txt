@@ -3,14 +3,16 @@ Contributors: gyrus
 Donate link: http://www.babyloniantimes.co.uk/index.php?page=donate
 Tags: admin, administration, cms, page, pages, custom post types, permalink, seo
 Requires at least: 3.0
-Tested up to: 5.0.1
+Tested up to: 4.9
 Stable tag: 0.3.1
 
 Lock Pages prevents specified pages (or all pages), posts, or custom post types from having their slug, parent, status or password edited, or from being deleted, by non-administrators.
 
 == Description ==
 
-(NOTE: This plugin was originally designed to only lock pages, and only later added custom post type functionality. Hence the name, and sometimes the terminology will say "pages" when it means "any post type".)
+NOTE: This plugin is not tested with Gutenberg, and we have no near-term plans to do so. If using WP > 5.0, use the Classic Editor if there are problems.
+
+NOTE: This plugin was originally designed to only lock pages, and only later added custom post type functionality. Hence the name, and sometimes the terminology will say "pages" when it means "any post type".
 
 Sometimes some pages or other posts are too important to allow them to be casually moved about or deleted by site editors. An editor may think nothing of renaming a page's slug, or deleting a page to replace it with something similar, perhaps unaware of effects on SEO. Also, certain pages might be essential to keep in place because of a site's structure, or because of aspects of a custom theme.
 
@@ -26,8 +28,6 @@ This plugin lets administrators "lock" any or all pages, and any post of any pos
 Locking is implemented by preventing the actual database update being performed as well as, where possible, having the interface element for that field removed. Where possible interface elements are removed via WP filters on the server; otherwise, jQuery is used on the client.
 
 NOTE: Currently, I've been unable to get this working with the Quick Edit functionality. As a stop-gap measure, which is only in place because it seems to be better than nothing, the Quick Edit link is removed for users who can't edit locked pages. I know, it's not great. But until I work out how to selectively block Quick Editing, I'm assuming a locked page should be locked. Users can always edit the other fields via the normal edit page.
-
-NOTE: This plugin is not tested with Gutenberg, and we have no near-term plans to do so. Please use the Classic Editor if there are problems.
 
 Go to GitHub for [development code](https://github.com/gyrus/Lock-Pages) and [issue tracking](https://github.com/gyrus/Lock-Pages/issues).
 
