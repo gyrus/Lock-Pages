@@ -1,8 +1,11 @@
 
 jQuery( document ).ready( function($) {
 
-	// Hide certain publishing controls
-	if ( $( 'body' ).hasClass( 'page-locked' ) ) {
+	var b  = $( 'body' );
+	var ol = $( '#sltlp-optional-locks' );
+
+	// Hide certain publishing controls if page is locked
+	if ( b.hasClass( 'page-locked' ) ) {
 
 		// Status and visibility
 		if ( $( '#misc-publishing-actions' ).length ) {
@@ -25,5 +28,20 @@ jQuery( document ).ready( function($) {
 		}
 
 	}
+
+	// Title locked?
+	if ( b.hasClass( 'page-title-locked' ) ) {
+		$( '#title' ).attr( 'readonly', true );
+	}
+
+	// Show / hide options locks
+	b.on( 'change', '#slt_lockpages_locked', function() {
+		var el = $( this );
+		if ( el.is( ':checked' ) ) {
+			ol.slideDown();
+		} else {
+			ol.slideUp();
+		}
+	});
 
 });

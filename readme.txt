@@ -74,6 +74,9 @@ Of course, contributing back to the WordPress community is also a great way to e
 
 == Changelog ==
 
+= 0.4 (????-??-??) =
+* Optional content and title locking (thanks Thomas Whyles!)
+
 = 0.3.1 (2018-12-18) =
 * Added 'protect from all' option, to allow lock protection to apply even if user has capability to lock posts
 * Added proper defaulting for updates, to include new option defaults (thanks Kevin VandeKrol!)

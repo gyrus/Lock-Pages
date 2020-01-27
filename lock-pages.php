@@ -35,18 +35,26 @@ if ( ! class_exists('SLT_LockPages') ) {
 		* Note that this has had to be hard-coded into lock-pages.js
 		*/
 		var $prefix = 'slt_lockpages_';
+
 		/**
 		* @var	string	$options_name	The options string name for this plugin
 		*/
 		var $options_name = 'SLT_LockPages_options';
+
 		/**
 		* @var	string	$localization_domain	Domain used for localization
 		*/
 		var $localization_domain = "SLT_LockPages";
+
 		/**
 		* @var	array		$options	Stores the options for this plugin
 		*/
 		var $options = array();
+
+		/**
+		 * @var array $lockable_fields
+		 */
+		var $lockable_fields = array( 'title', 'content' );
 
 		/**
 		* PHP 5 Constructor
@@ -86,6 +94,9 @@ if ( ! class_exists('SLT_LockPages') ) {
 			add_filter( 'post_row_actions', array( &$this, 'remove_page_row_actions' ), 10, 2 ); // non-page post types
 			add_filter( 'get_sample_permalink_html', array( &$this, 'remove_edit_permalink' ), 10, 2 );
 			add_filter( 'admin_body_class', array( &$this, 'admin_body_class' ) );
+			add_filter( 'tiny_mce_before_init', array( &$this, 'tinymce_content_edit_disable' ), 10 );
+			add_filter( 'wp_editor_settings', array( &$this, 'wp_content_edit_disable' ), 10, 2 );
+			add_action( 'load-revision.php', array( &$this, 'prevent_content_revisions' ), 10 );
 
 			add_action( 'add_meta_boxes', array( &$this, 'create_meta_box' ), 10, 2 );
 			add_action( 'save_post', array( &$this, 'save_meta' ), 1, 2 );
@@ -101,6 +112,7 @@ if ( ! class_exists('SLT_LockPages') ) {
 			add_filter( 'status_save_pre', array( &$this, 'lock_status' ), 0 );
 			add_filter( 'password_save_pre', array( &$this, 'lock_password' ), 0 );
 			add_filter( 'user_has_cap', array( &$this, 'lock_deletion' ), 0, 4 );
+			add_filter( 'content_save_pre', array( &$this, 'lock_content' ), 0 );
 
 		}
 
@@ -338,23 +350,106 @@ if ( ! class_exists('SLT_LockPages') ) {
 		}
 
 		/**
+		 * Prevents unauthorized users changing post/page content (if enabled for post).
+		 *
+		 * @since	0.4
+		 * @return	string
+		 */
+		function lock_content( $content ) {
+
+			if ( ! $this->user_can_edit_submitted_post() ) :
+				if ( $this->is_page_locked_for_current_user() && $this->is_page_field_locked( 'content' ) ) :
+					$content = $_POST[ $this->prefix . 'old_content' ];
+				endif;
+			endif;
+
+			return $content;
+
+		}
+
+		/**
+		 * Make tinymce content editor readonly (if enabled for post).
+		 *
+		 * @since	0.4
+		 * @return	array
+		 */
+		function tinymce_content_edit_disable( $args ) {
+
+			if (
+				$args['selector'] === '#content' &&
+				$this->is_page_locked_for_current_user() &&
+				$this->is_page_field_locked( 'content' )
+			) :
+				$args['readonly'] = 1;
+				$args['toolbar1'] = 'help';
+			endif;
+
+			return $args;
+
+		}
+
+		/**
+		 * Disables the 'text' tab in the content editor (if enabled for post).
+		 * This prevents switching to the text editor where readonly is not applied.
+		 *
+		 * @since	0.4
+		 * @return	array
+		 */
+		function wp_content_edit_disable( $settings, $editor_id ) {
+
+			if (
+				$editor_id === 'content' &&
+				$this->is_page_locked_for_current_user() &&
+				$this->is_page_field_locked( 'content' )
+			) :
+				$settings['quicktags'] = false;
+				$settings['media_buttons'] = false;
+			endif;
+
+			return $settings;
+
+		}
+
+		/**
+		 * Disables the Revisions screen for users who do not have permission to edit content.
+		 *
+		 * @since	0.4
+		 */
+		function prevent_content_revisions() {
+
+			$revision_id = ! empty( $_GET[ 'revision' ] ) ? $_GET[ 'revision' ] : null;
+			$revision    = $revision_id ? get_post( $revision_id ) : null;
+			$orig_post   = is_object( $revision ) ? $revision->post_parent : null;
+			if ( $orig_post && $this->is_page_locked_for_current_user() && $this->is_page_field_locked( 'content', $orig_post ) ) :
+				wp_die( __( 'You do not have permission to edit revisions for this item.', $this->localization_domain ) );
+			endif;
+
+		}
+
+		/**
 		* Stores old values for locked fields in hidden fields on the page edit form.
 		*
 		* @since	0.1
 		* @global	$post
 		*/
 		function old_value_fields( $post ) {
-			if ( $this->is_post_type_lockable( get_post_type( $post ) ) ) {
+			if ( $this->is_post_type_lockable( get_post_type( $post ) ) ) :
 				echo '<input type="hidden" name="' . esc_attr( $this->prefix ) . 'old_password" value="' . esc_attr( $post->post_password ) . '" />';
 				echo '<input type="hidden" name="' . esc_attr( $this->prefix ) . 'old_status" value="' . esc_attr( $post->post_status ) . '" />';
 				echo '<input type="hidden" name="' . esc_attr( $this->prefix ) . 'old_slug" value="' . esc_attr( $post->post_name ) . '" />';
-				if ( is_post_type_hierarchical( get_post_type( $post ) ) ) {
+				if ( is_post_type_hierarchical( get_post_type( $post ) ) ) :
 					echo '<input type="hidden" name="' . esc_attr( $this->prefix ) . 'old_parent" value="' . esc_attr( $post->post_parent ) . '" />';
-				}
-				if ( get_post_type( $post ) == 'page' ) {
+				endif;
+				if ( get_post_type( $post ) == 'page' ) :
 					echo '<input type="hidden" name="' . esc_attr( $this->prefix ) . 'old_page_template" value="' . esc_attr( $post->page_template ) . '" />';
-				}
-			}
+				endif;
+				foreach ( $this->lockable_fields as $field ) :
+					if ( $this->is_page_field_locked( $field, $post->ID ) ) :
+						$field_value = ! empty( $post->{'post_'.$field} ) ? $post->{'post_'.$field} : '';
+						echo '<textarea name="' . esc_attr( $this->prefix ) . 'old_' . esc_attr( $field ) . '" style="display:none;" readonly>'. esc_textarea( $field_value ) .'</textarea>';
+					endif;
+				endforeach;
+			endif;
 		}
 
 		/**
@@ -364,13 +459,13 @@ if ( ! class_exists('SLT_LockPages') ) {
 		* @global	$post $pagenow
 		*/
 		function output_page_locked_notice() {
-			if ( $this->is_page_locked_for_current_user() ) {
-				if ( get_post_type() == 'page' ) {
-					echo '<div class="updated page-locked-notice"><p><span class="dashicons dashicons-lock"></span>' . __( 'Please note that this page is locked, and certain changes are restricted.', $this->localization_domain ) . '</p></div>';
-				} else {
-					echo '<div class="updated page-locked-notice"><p><span class="dashicons dashicons-lock"></span>' . __( 'Please note that this item is locked, and certain changes are restricted.', $this->localization_domain ) . '</p></div>';
-				}
-			}
+			if ( $this->is_page_locked_for_current_user() ) :
+				if ( get_post_type() == 'page' ) :
+					echo '<div class="notice notice-info page-locked-notice is-dismissible"><p><span class="dashicons dashicons-lock"></span>' . __( 'Please note that this page is locked, and certain changes are restricted.', $this->localization_domain ) . '</p></div>';
+				else :
+					echo '<div class="notice notice-info page-locked-notice is-dismissible"><p><span class="dashicons dashicons-lock"></span>' . __( 'Please note that this item is locked, and certain changes are restricted.', $this->localization_domain ) . '</p></div>';
+				endif;
+			endif;
 		}
 
 		/**
@@ -397,12 +492,11 @@ if ( ! class_exists('SLT_LockPages') ) {
  		* @global	$post
  		*/
 		function output_meta_box() {
-			if ( current_user_can( $this->options[$this->prefix.'capability'] ) ) {
-				global $post; ?>
+			if ( current_user_can( $this->options[$this->prefix.'capability'] ) ) { ?>
 
 				<input type="hidden" name="<?php echo esc_attr( $this->prefix ); ?>meta_nonce" value="<?php echo wp_create_nonce(plugin_basename(__FILE__)); ?>" />
 				<label for="<?php echo esc_attr( $this->prefix ); ?>locked">
-					<input type="checkbox" name="<?php echo esc_attr( $this->prefix ); ?>locked" id="<?php echo $this->prefix; ?>locked"<?php if ( $this->is_page_locked( $post->ID ) ) echo ' checked="checked"'; ?> value="true" />
+					<input type="checkbox" name="<?php echo esc_attr( $this->prefix ); ?>locked" id="<?php echo $this->prefix; ?>locked"<?php if ( $this->is_page_locked() ) echo ' checked="checked"'; ?> value="true">
 					<?php
 					if ( get_post_type() == 'page' ) {
 						_e( 'Lock this page', $this->localization_domain );
@@ -411,6 +505,32 @@ if ( ! class_exists('SLT_LockPages') ) {
 					}
 					?>
 				</label>
+
+				<div id="sltlp-optional-locks" style="margin-top: .6em;<?php if ( ! $this->is_page_locked() ) echo ' display:none;'; ?>">
+
+					<p class="description"><?php _e( 'You can also prevent these major fields from being changed.', $this->localization_domain ); ?></p>
+
+					<?php foreach ( $this->lockable_fields as $field ) : ?>
+
+						<div style="margin: .5em 0;">
+							<label for="<?php echo esc_attr( $this->prefix ) . $field; ?>_locked">
+								<input type="checkbox" name="<?php echo esc_attr( $this->prefix ) . $field; ?>_locked" id="<?php echo $this->prefix . $field; ?>_locked"<?php if ( $this->is_page_field_locked( $field ) ) echo ' checked="checked"'; ?> value="true">
+								<?php
+								switch ( $field ) :
+									case 'title':
+										_e( 'Lock title', $this->localization_domain );
+										break;
+									case 'content':
+										_e( 'Lock content', $this->localization_domain );
+										break;
+								endswitch;
+								?>
+							</label>
+						</div>
+
+					<?php endforeach; ?>
+
+				</div>
 
 				<?php
 			}
@@ -440,34 +560,81 @@ if ( ! class_exists('SLT_LockPages') ) {
 				return;
 
 			// Get list of locked posts
-			$locked_posts = $this->options[$this->prefix.'locked_pages'];
-			$update = false;
+			$locked_posts = [
+				'default' => ( empty( $this->options[ $this->prefix . 'locked_pages' ] ) ? [] : $this->options[ $this->prefix . 'locked_pages' ] ),
+			];
+			$update       = [
+				'default' => false,
+			];
 
-			if ( isset( $_POST[$this->prefix.'locked'] ) && $_POST[$this->prefix.'locked'] ) {
+			if ( ! empty( $_POST[ $this->prefix . 'locked' ] ) ) {
 				// Box was checked, make sure page is added to list of locked pages
-				if ( ! in_array( $post_id, $locked_posts ) ) {
-					$locked_posts[] = $post_id;
-					$update = true;
+				if ( ! in_array( $post_id, $locked_posts[ 'default' ] ) ) {
+					$locked_posts[ 'default' ] = $post_id;
+					$update[ 'default' ]       = true;
 				}
 			} else {
 				// Box not checked, make sure page isn't in list of locked pages
-				$id_pos = array_search( $post_id, $locked_posts );
+				$id_pos = array_search( $post_id, $locked_posts[ 'default' ] );
 				if ( $id_pos !== false ) {
-					unset( $locked_posts[$id_pos] );
-					$update = true;
+					unset( $locked_posts[ 'default' ][ $id_pos ] );
+					$update[ 'default' ] = true;
 				}
 			}
 
+			// Optional field locking
+			foreach ( $this->lockable_fields as $field ) :
+
+				// Get list of posts with this field lockd
+				$locked_posts[ $field ] = empty( $this->options[ $this->prefix . 'locked_pages_' . $field . '_lock' ] ) ? [] : $this->options[ $this->prefix . 'locked_pages_' . $field . '_lock' ];
+				$update[ $field ]       = false;
+
+				// Only register field box being checked if main lock was set
+				if (
+					! empty( $_POST[ $this->prefix . 'locked' ] ) &&
+					! empty( $_POST[ $this->prefix . $field . '_locked' ] )
+				) :
+					// Box was checked, make sure page is added to list of locked pages
+					if ( ! in_array( $post_id, $locked_posts[ $field ] ) ) :
+						$locked_posts[ $field ][] = $post_id;
+						$update[ $field ]         = true;
+					endif;
+				else :
+					// Box not checked, make sure page isn't in list of locked pages
+					$id_pos = array_search( $post_id, $locked_posts[ $field ] );
+					if ( $id_pos !== false ) :
+						unset( $locked_posts[ $field ][ $id_pos ] );
+						$update[ $field ] = true;
+					endif;
+				endif;
+
+			endforeach;
+
 			// Need to update?
-			if ( $update ) {
-				$this->options[$this->prefix.'locked_pages'] = $locked_posts;
+			if (
+				! empty( $update[ 'default' ] ) ||
+				! empty( $update[ 'title' ] ) ||
+				! empty( $update[ 'content' ] )
+			) :
+
+				if ( ! empty( $update[ 'default' ] ) ) :
+					$this->options[ $this->prefix . 'locked_pages' ] = $locked_posts[ 'default' ];
+				endif;
+
+				foreach ( $this->lockable_fields as $field ) :
+					if ( ! empty( $update[ $field ] ) ) :
+						$this->options[ $this->prefix . 'locked_pages_' . $field . '_lock' ] = $locked_posts[ $field ];
+					endif;
+				endforeach;
+
 				$this->save_admin_options();
-			}
+
+			endif;
 
 		}
 
 		/**
-		* Checks whether current user can edit page elements according to plugin settings
+		 * Checks whether current user can edit page elements according to plugin settings
 		* (and maybe page being edited).
 		*
 		* @since	0.1
@@ -510,15 +677,19 @@ if ( ! class_exists('SLT_LockPages') ) {
 
 		/**
 		* Checks if a specified page is currently locked (irrespective of the scope setting).
+		*
 		* @return	bool
 		* @since	0.1
 		*/
-		function is_page_locked( $post_id ) {
-			$page_is_locked = false;
-			if ( $post_id ) {
-				$page_is_locked	= in_array( $post_id, $this->options[$this->prefix.'locked_pages'] );
-			}
-			return $page_is_locked;
+		function is_page_locked( $post_id = null ) {
+
+			// Init
+			if ( empty( $post_id ) ) :
+				$post_id = $this->get_admin_post_id();
+			endif;
+
+			return in_array( $post_id, $this->options[$this->prefix.'locked_pages'] );
+
 		}
 
 		/**
@@ -535,6 +706,36 @@ if ( ! class_exists('SLT_LockPages') ) {
 				( isset( $_GET['action'] ) && $_GET['action'] == 'edit' ) &&
 				! $this->user_can_edit( $post->ID )
 			);
+		}
+
+		/**
+		 * Checks if specified field's content is currently locked (irrespective of the scope setting).
+		 *
+		 * @param string $field 'content' | 'title'
+		 * @param int $post_id
+		 * @return	bool
+		 * @since	0.4
+		 */
+		function is_page_field_locked( $field = 'content', $post_id = null ) {
+
+			// Init
+			$page_field_is_locked = false;
+			if ( empty( $post_id ) ) :
+				$post_id = $this->get_admin_post_id();
+			endif;
+
+			// Page field content can only be locked if the entire post/page is also locked
+			if ( $this->is_page_locked( $post_id ) ) :
+
+				if ( $post_id && ! empty( $this->options[ $this->prefix . 'locked_pages_' . $field . '_lock' ] ) ) :
+					$opts                 = $this->options[ $this->prefix . 'locked_pages_' . $field . '_lock' ];
+					$page_field_is_locked = ( is_array( $opts ) && in_array( $post_id, $opts ) );
+				endif;
+
+			endif;
+
+			return $page_field_is_locked;
+
 		}
 
 		/**
@@ -564,14 +765,53 @@ if ( ! class_exists('SLT_LockPages') ) {
 		}
 
 		/**
+		 * Get post ID in admin
+		 *
+		 * @param object $the_post
+		 * @return int
+		 * @since 0.4
+		 */
+		function get_admin_post_id( $the_post = null ) {
+
+			// Init
+			global $post;
+			$post_id = null;
+
+			if ( ! empty( $the_post->ID ) ) :
+
+				// From supplied post object
+				$post_id = $the_post->ID;
+
+			elseif ( ! empty( $_POST['post_id'] ) ) :
+
+				// From post form submission
+				$post_id = (int) $_POST['post_id'];
+
+			elseif ( ! empty( $_GET['post'] ) ) :
+
+				// From post edit screen query parameter
+				$post_id = (int) $_GET['post'];
+
+			elseif ( ! empty( $post->ID ) ) :
+
+				// From post object
+				$post_id = $post->ID;
+
+			endif;
+
+			return $post_id;
+
+		}
+
+		/**
 		* Load JavaScript and CSS
 		*
 		* @since	0.2
 		* @uses	wp_enqueue_script() wp_enqueue_style()
 		*/
 		function load_js_css() {
-			wp_enqueue_script( $this->prefix . '_js', plugins_url( 'lock-pages.js', __FILE__ ), array( 'jquery' ), '3.0' );
-			wp_enqueue_style( $this->prefix . '_css', plugins_url( 'lock-pages.css', __FILE__ ), array(), '3.0' );
+			wp_enqueue_script( $this->prefix . '_js', plugins_url( 'lock-pages.js', __FILE__ ), array( 'jquery' ), '4.0' );
+			wp_enqueue_style( $this->prefix . '_css', plugins_url( 'lock-pages.css', __FILE__ ), array(), '4.0' );
 		}
 
 		/**
@@ -581,10 +821,19 @@ if ( ! class_exists('SLT_LockPages') ) {
 		* @global	$post $pagenow
 		*/
 		function admin_body_class( $class ) {
-			if ( $this->is_page_locked_for_current_user() ) {
+
+			if ( $this->is_page_locked_for_current_user() ) :
 				$class .= ' page-locked';
-			}
+			endif;
+			if ( $this->is_page_field_locked( 'title' ) ) :
+				$class .= ' page-title-locked';
+			endif;
+			if ( $this->is_page_field_locked( 'content' ) ) :
+				$class .= ' page-content-locked';
+			endif;
+
    			return $class;
+
 		}
 
 
@@ -598,11 +847,13 @@ if ( ! class_exists('SLT_LockPages') ) {
 
 			// Defaults
 			$defaults = array(
-				$this->prefix.'capability'			=> 'manage_options',
-				$this->prefix.'protect_from_all'	=> false,
-				$this->prefix.'scope'				=> 'locked',
-				$this->prefix.'post_types'			=> array(),
-				$this->prefix.'locked_pages'		=> array(),
+				$this->prefix . 'capability'                => 'manage_options',
+				$this->prefix . 'protect_from_all'          => false,
+				$this->prefix . 'scope'                     => 'locked',
+				$this->prefix . 'post_types'                => array(),
+				$this->prefix . 'locked_pages'              => array(),
+				$this->prefix . 'locked_pages_title_lock'   => array(),
+				$this->prefix . 'locked_pages_content_lock' => array(),
 			);
 			$do_update = false;
 
