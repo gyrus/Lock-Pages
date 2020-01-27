@@ -552,7 +552,7 @@ if ( ! class_exists('SLT_LockPages') ) {
 			*/
 			if (
 				! current_user_can( $this->options[$this->prefix.'capability'] ) ||
-				! current_user_can( 'edit_' . get_post_type( $post ) . 's', $post_id ) ||
+				! current_user_can( $this->get_post_type_cap( get_post_type( $post ), 'edit_post' ), $post_id ) ||
 				! $this->is_post_type_lockable( get_post_type( $post ) ) ||
 				isset( $_POST["_inline_edit"] ) ||
 				( isset( $_REQUEST["action"] ) && $_REQUEST["action"] == 'simple_page_ordering'  )
@@ -800,6 +800,23 @@ if ( ! class_exists('SLT_LockPages') ) {
 			endif;
 
 			return $post_id;
+
+		}
+
+		/**
+		 * Get a capability for a post type
+		 *
+		 * @param string $post_type
+		 * @param string $cap
+		 * @return string
+		 * @since 0.4
+		 */
+		function get_post_type_cap( $post_type, $cap = 'edit_post' ) {
+
+			// Get post type object
+			$pt_object = get_post_type_object( $post_type );
+
+			return $pt_object->cap->{$cap};
 
 		}
 

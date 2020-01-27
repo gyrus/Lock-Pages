@@ -76,6 +76,7 @@ Of course, contributing back to the WordPress community is also a great way to e
 
 = 0.4 (????-??-??) =
 * Optional content and title locking (thanks Thomas Whyles!)
+* Fixed issue with locking custom post types with custom edit caps
 
 = 0.3.1 (2018-12-18) =
 * Added 'protect from all' option, to allow lock protection to apply even if user has capability to lock posts
