@@ -570,8 +570,8 @@ if ( ! class_exists('SLT_LockPages') ) {
 			if ( ! empty( $_POST[ $this->prefix . 'locked' ] ) ) {
 				// Box was checked, make sure page is added to list of locked pages
 				if ( ! in_array( $post_id, $locked_posts[ 'default' ] ) ) {
-					$locked_posts[ 'default' ] = $post_id;
-					$update[ 'default' ]       = true;
+					$locked_posts[ 'default' ][] = $post_id;
+					$update[ 'default' ]         = true;
 				}
 			} else {
 				// Box not checked, make sure page isn't in list of locked pages
